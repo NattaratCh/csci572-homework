@@ -1,0 +1,4 @@
+Comparing the search result from Google versus Bing, it can be concluded that the average number of overlapping is 5.72 per query or 57.2%.
+This number implies that more than 50% of Bing's search result is overlapped with Google. The average of Spearman Coefficient is -9.580389610389611 which is negative.
+There are 59 queries with negative Spearman Coefficient. The negative value indicates that the rank of results of these two search engines are quite dissimilar. This can also imply that they are using different algorithm for searching.
+However, Spearman Coefficient cannot conclude which search engine performs better since it is only the value to show how similar of the ranking of two search engines when the results are overlapped.
