@@ -107,11 +107,11 @@ public class CrawlerData {
     }
 
     public void addStatusCode(Integer statusCode) {
-        statusCode = statusCode >= 200 && statusCode < 300 ? 200 : statusCode;
+        // statusCode = statusCode >= 200 && statusCode < 300 ? 200 : statusCode;
         int count = statusCodeMap.getOrDefault(statusCode, 0);
         statusCodeMap.put(statusCode, count + 1);
 
-        if (statusCode > 300) numberOfFailFetch++;
+        if (statusCode >= 300) numberOfFailFetch++;
     }
 
     public void addSize(long size) {

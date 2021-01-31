@@ -52,7 +52,8 @@ public class MyCrawler extends WebCrawler {
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
 
-		return !FILTERS.matcher(href).matches() &&
+		return !FILTERS_CONTENT_TYPE.contains(referringPage.getContentType()) &&
+				!FILTERS.matcher(href).matches() &&
 				( href.startsWith(insideUrls[0])
 				|| href.startsWith(insideUrls[1])
 				|| href.startsWith(insideUrls[2])
@@ -65,7 +66,6 @@ public class MyCrawler extends WebCrawler {
 		 long size = page.getContentData().length;
 		 int statusCode = page.getStatusCode();
 		 String contentType = page.getContentType().split(";")[0];
-		 if (FILTERS_CONTENT_TYPE.contains(contentType)) return;
 
 		 LOGGER.info("URL: " + url);
 		 LOGGER.info("Content-type: " + contentType);
@@ -108,11 +108,10 @@ public class MyCrawler extends WebCrawler {
 
 	private PointerStatus getPointerStatus(String url) {
 		url = url.toLowerCase();
-		if (!FILTERS.matcher(url).matches() && (
-				url.startsWith(insideUrls[0])
+		if (url.startsWith(insideUrls[0])
 				|| url.startsWith(insideUrls[1])
 				|| url.startsWith(insideUrls[2])
-				|| url.startsWith(insideUrls[3])))
+				|| url.startsWith(insideUrls[3]))
 			return PointerStatus.OK;
 		else
 			return PointerStatus.N_OK;
