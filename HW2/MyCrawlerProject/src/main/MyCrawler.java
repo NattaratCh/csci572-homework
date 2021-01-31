@@ -1,5 +1,6 @@
 package main;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -17,8 +18,9 @@ public class MyCrawler extends WebCrawler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MyCrawler.class);
 
 	private static final Pattern FILTERS = Pattern.compile(".*(\\.(css|js|script|mp3|mp4|zip|gz|rss)($|\\?)).*");
-	private final static Pattern WHITE_LIST = Pattern.compile(".*(\\.(html|HTML|doc|pdf|jpg|jpeg|png|gif))$");
-	private final static String[] insideUrls = {
+	private static final Pattern WHITE_LIST = Pattern.compile(".*(\\.(html|HTML|doc|pdf|jpg|jpeg|png|gif))$");
+	private static final Set<String> FILTERS_CONTENT_TYPE = new HashSet(Arrays.asList("text/css", "text/javascript", "application/json"));
+	private static final String[] insideUrls = {
 			"https://www.nytimes.com",
 			"http://www.nytimes.com",
 			"https://nytimes.com",
@@ -30,16 +32,21 @@ public class MyCrawler extends WebCrawler {
 	public MyCrawler() {
 		crawlerData = new CrawlerData();
 	}
-	
+
+	@Override
+	public Object getMyLocalData() {
+		return crawlerData;
+	}
+
 	@Override
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
 
-		return !FILTERS.matcher(href).matches()
-				|| href.startsWith(insideUrls[0])
+		return !FILTERS.matcher(href).matches() &&
+				( href.startsWith(insideUrls[0])
 				|| href.startsWith(insideUrls[1])
 				|| href.startsWith(insideUrls[2])
-				|| href.startsWith(insideUrls[3]);
+				|| href.startsWith(insideUrls[3]) );
 	}
 	
 	@Override
@@ -48,6 +55,8 @@ public class MyCrawler extends WebCrawler {
 		 long size = page.getContentData().length;
 		 int statusCode = page.getStatusCode();
 		 String contentType = page.getContentType().split(";")[0];
+		 if (FILTERS_CONTENT_TYPE.contains(contentType)) return;
+
 		 LOGGER.info("URL: " + url);
 		 LOGGER.info("Content-type: " + contentType);
 		 crawlerData.addTotalProcessPages();
@@ -82,7 +91,7 @@ public class MyCrawler extends WebCrawler {
 
 	@Override
 	protected void handlePageStatusCode(WebURL webUrl, int statusCode, String statusDescription) {
-		LOGGER.info(webUrl + " - " + statusCode);
+		LOGGER.info("handlePageStatusCode: " + webUrl + " - " + statusCode);
 		crawlerData.addFetchData(webUrl.getURL(), statusCode);
 		crawlerData.addStatusCode(statusCode);
 	}

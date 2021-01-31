@@ -19,6 +19,7 @@ public class Controller {
 	private static final String FETCH_FILE = "./output/fetch_nytimes.csv";
 	private static final String VISIT_FILE = "./output/visit_nytimes.csv";
 	private static final String URL_FILE = "./output/url_nytimes.csv";
+	private static final String OUTPUT = "./output/CrawlReport_nytimes.txt";
 	private static final String NEWS_URL = "https://www.nytimes.com";
 
 
@@ -32,6 +33,10 @@ public class Controller {
 		 config.setMaxPagesToFetch(maxPagesToFetch);
 		 config.setMaxDepthOfCrawling(maxDepth);
 		 config.setPolitenessDelay(100);
+		 config.setIncludeHttpsPages(true);
+		 config.setIncludeBinaryContentInCrawling(true);
+		 config.setRespectNoIndex(false);
+		 config.setRespectNoFollow(false);
 		 /*
 		 * Instantiate the controller for this crawl.
 		 */
@@ -75,6 +80,7 @@ public class Controller {
 			List<String> allVisitUrls = crawlerData.getAllVisitUrls();
 			Map<String, URLData> visitMap = crawlerData.getVisitData();
 			Map<String, Integer> fetchMap = crawlerData.getFetchData();
+			urlData.addAll(crawlerData.getUrlData());
 
 			appendMap(fetchData, fetchMap);
 			appendVisitMap(visitData, visitMap);
@@ -105,49 +111,54 @@ public class Controller {
 	private static void writeResults(int fetchAttempted, int successFetchAttempted, int failFetchAttempted,
 									 int totalUrls, int totalUniqueUrls, int totalUniqueInUrls, int totalUniqueOutUrls,
 									 Map<Integer, Integer> statusCodeMap, Map<Integer, Integer> sizeMap, Map<String, Integer> contentTypeMap) {
+		File outputFile = new File(OUTPUT);
+		if (outputFile.exists()) {
+			outputFile.delete();
+		}
+
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter("./output/CrawlReport_nytimes.txt", true));
-			writer.append("Name: Nattarat Champreeda");
-			writer.append("USC ID: 5487597112");
-			writer.append("News site crawled: nytimes.com");
-			writer.append("Number of threads: 10");
+			writer = new BufferedWriter(new FileWriter(OUTPUT, true));
+			writer.append("Name: Nattarat Champreeda\n");
+			writer.append("USC ID: 5487597112\n");
+			writer.append("News site crawled: nytimes.com\n");
+			writer.append("Number of threads: 10\n");
 
 			writer.append("\n");
-			writer.append("Fetch Statistics");
-			writer.append("==============");
-			writer.append("# fetches attempted: " + fetchAttempted);
-			writer.append("# fetches succeeded: " + successFetchAttempted);
-			writer.append("# fetches failed or aborted: " + failFetchAttempted);
+			writer.append("Fetch Statistics\n");
+			writer.append("==============\n");
+			writer.append("# fetches attempted: " + fetchAttempted + "\n");
+			writer.append("# fetches succeeded: " + successFetchAttempted + "\n");
+			writer.append("# fetches failed or aborted: " + failFetchAttempted + "\n");
 
 			writer.append("\n");
-			writer.append("Outgoing URLs:" );
-			writer.append("==============");
-			writer.append("Total URLs extracted: " + totalUrls);
-			writer.append("# unique URLs extracted: " + totalUniqueUrls);
-			writer.append("# unique URLs within News Site: " + totalUniqueInUrls);
-			writer.append("# unique URLs outside News Site: " + totalUniqueOutUrls);
+			writer.append("Outgoing URLs:\n" );
+			writer.append("==============\n");
+			writer.append("Total URLs extracted: " + totalUrls + "\n");
+			writer.append("# unique URLs extracted: " + totalUniqueUrls + "\n");
+			writer.append("# unique URLs within News Site: " + totalUniqueInUrls + "\n");
+			writer.append("# unique URLs outside News Site: " + totalUniqueOutUrls + "\n");
 
 			writer.append("\n");
-			writer.append("Status Codes:");
-			writer.append("==============");
+			writer.append("Status Codes:\n");
+			writer.append("==============\n");
 			for(Integer key: statusCodeMap.keySet()) {
-				writer.append(key + ": " + statusCodeMap.get(key));
+				writer.append(key + ": " + statusCodeMap.get(key) + "\n");
 			}
 
 			writer.append("\n");
-			writer.append("File Sizes:");
-			writer.append("==============");
+			writer.append("File Sizes:\n");
+			writer.append("==============\n");
 			TreeMap<Integer, String> sizeDescMap = getSizeMap();
 			for(Integer key: sizeDescMap.keySet()) {
-				writer.append(sizeDescMap.get(key) + ": " + sizeMap.get(key));
+				writer.append(sizeDescMap.get(key) + ": " + sizeMap.get(key) + "\n");
 			}
 
 			writer.append("\n");
-			writer.append("Content Types:");
-			writer.append("==============");
+			writer.append("Content Types:\n");
+			writer.append("==============\n");
 			for(String key: contentTypeMap.keySet()) {
-				writer.append(key + ": " + contentTypeMap.get(key));
+				writer.append(key + ": " + contentTypeMap.get(key) + "\n");
 			}
 
 			writer.close();
@@ -215,11 +226,35 @@ public class Controller {
 				.collect(Collectors.joining(","));
 	}
 
+	private static void appendIntegerMap(Map<Integer, Integer> toMap, Map<Integer, Integer> fromMap) {
+		for(Integer key: fromMap.keySet()) {
+			if (toMap.containsKey(key)) {
+				int count = toMap.get(key) + fromMap.get(key);
+				toMap.put(key, count);
+			} else {
+				toMap.put(key, fromMap.get(key));
+			}
+		}
+	}
+
+	private static void appendStringMap(Map<String, Integer> toMap, Map<String, Integer> fromMap) {
+		for(String key: fromMap.keySet()) {
+			if (toMap.containsKey(key)) {
+				int count = toMap.get(key) + fromMap.get(key);
+				toMap.put(key, count);
+			} else {
+				toMap.put(key, fromMap.get(key));
+			}
+		}
+	}
+
 	private static<T> void appendMap(Map<T, Integer> toMap, Map<T, Integer> fromMap) {
 		for(T key: fromMap.keySet()) {
 			if (toMap.containsKey(key)) {
 				int count = toMap.get(key) + fromMap.get(key);
 				toMap.put(key, count);
+			} else {
+				toMap.put(key, fromMap.get(key));
 			}
 		}
 	}
