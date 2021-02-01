@@ -1,0 +1,25 @@
+<configuration>
+    <timestamp key="timestamp" datePattern="yyyyMMddHHmmss"/>
+    <appender name="File" class="ch.qos.logback.core.FileAppender">
+        <file>./logs/crawler_${timestamp}.log</file>
+        <append>true</append>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.http" level="ERROR"/>
+    <logger name="edu.uci.ics.crawler4j.fetcher" level="ERROR"/>
+    <logger name="edu.uci.ics.crawler4j" level="ERROR"/>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="File" />
+    </root>
+</configuration>

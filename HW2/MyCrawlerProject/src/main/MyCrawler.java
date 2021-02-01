@@ -51,13 +51,15 @@ public class MyCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
-
-		return !FILTERS_CONTENT_TYPE.contains(referringPage.getContentType()) &&
+		boolean shouldVisit = !FILTERS_CONTENT_TYPE.contains(referringPage.getContentType()) &&
 				!FILTERS.matcher(href).matches() &&
 				( href.startsWith(insideUrls[0])
-				|| href.startsWith(insideUrls[1])
-				|| href.startsWith(insideUrls[2])
-				|| href.startsWith(insideUrls[3]) );
+						|| href.startsWith(insideUrls[1])
+						|| href.startsWith(insideUrls[2])
+						|| href.startsWith(insideUrls[3]) );
+		LOGGER.info("shouldVisit | href " + href + " : " + shouldVisit);
+
+		return shouldVisit;
 	}
 	
 	@Override
@@ -67,8 +69,7 @@ public class MyCrawler extends WebCrawler {
 		 int statusCode = page.getStatusCode();
 		 String contentType = page.getContentType().split(";")[0];
 
-		 LOGGER.info("URL: " + url);
-		 LOGGER.info("Content-type: " + contentType);
+		 LOGGER.info("visit | URL: " + url + " Content-type: " + contentType);
 		 crawlerData.addTotalProcessPages();
 		 Set<WebURL> links = new HashSet<>();
 		 if (page.getParseData() instanceof HtmlParseData) {
@@ -95,13 +96,13 @@ public class MyCrawler extends WebCrawler {
 		 }
 
 		 if (crawlerData.getTotalProcessPages() % 50 == 0) {
-		 	LOGGER.info(String.format("Total process pages: (%d)", crawlerData.getTotalProcessPages()));
+		 	LOGGER.info(String.format("#### Total process pages: (%d)", crawlerData.getTotalProcessPages()));
 		 }
 	}
 
 	@Override
 	protected void handlePageStatusCode(WebURL webUrl, int statusCode, String statusDescription) {
-		LOGGER.info("handlePageStatusCode: " + webUrl + " - " + statusCode);
+		LOGGER.info("handlePageStatusCode | " + webUrl + " - " + statusCode);
 		crawlerData.addFetchData(webUrl.getURL(), statusCode);
 		crawlerData.addStatusCode(statusCode);
 	}

@@ -18,6 +18,7 @@ public class CrawlerData {
     private Map<Integer, Integer> sizeMap;
     private int totalProcessPages;
     private int numberOfFailFetch;
+    private int numberOfSuccessFetch;
 
     public CrawlerData() {
         allVisitUrls = new ArrayList<>();
@@ -77,6 +78,10 @@ public class CrawlerData {
         return numberOfFailFetch;
     }
 
+    public int getNumberOfSuccessFetch() {
+        return numberOfSuccessFetch;
+    }
+
     public void addAllVisitUrls(String url) {
         allVisitUrls.add(url);
     }
@@ -112,6 +117,7 @@ public class CrawlerData {
         statusCodeMap.put(statusCode, count + 1);
 
         if (statusCode >= 300) numberOfFailFetch++;
+        else numberOfSuccessFetch++;
     }
 
     public void addSize(long size) {

@@ -75,6 +75,9 @@ public class Controller {
 		Map<Integer, Integer> sizeMap = new HashMap<>();
 		Map<String, Integer> contentTypeMap = new HashMap<>();
 
+		int totalProcessPages = 0;
+		int numberOfSuccessFetch = 0;
+
 		for(Object obj: crawlerLocalData) {
 			CrawlerData crawlerData = (CrawlerData) obj;
 			List<String> allVisitUrls = crawlerData.getAllVisitUrls();
@@ -97,6 +100,9 @@ public class Controller {
 			appendMap(statusCodeMap, crawlerData.getStatusCodeMap());
 			appendMap(sizeMap, crawlerData.getSizeMap());
 			appendMap(contentTypeMap, crawlerData.getContentTypeMap());
+
+			totalProcessPages += crawlerData.getTotalProcessPages();
+			numberOfSuccessFetch += crawlerData.getNumberOfSuccessFetch();
 		}
 
 		LOGGER.info("Start writting CSV files");
@@ -105,12 +111,13 @@ public class Controller {
 		writeCSV(URL_FILE, createUrlDataList(urlData));
 		LOGGER.info("Start results files");
 		writeResults(fetchAttempted, successFetchAttempted, failFetchAttempted, totalUrls, totalUniqueUrls, totalUniqueInUrls, totalUniqueOutUrls,
-				statusCodeMap, sizeMap, contentTypeMap);
+				statusCodeMap, sizeMap, contentTypeMap, totalProcessPages, numberOfSuccessFetch);
 	}
 
 	private static void writeResults(int fetchAttempted, int successFetchAttempted, int failFetchAttempted,
 									 int totalUrls, int totalUniqueUrls, int totalUniqueInUrls, int totalUniqueOutUrls,
-									 Map<Integer, Integer> statusCodeMap, Map<Integer, Integer> sizeMap, Map<String, Integer> contentTypeMap) {
+									 Map<Integer, Integer> statusCodeMap, Map<Integer, Integer> sizeMap, Map<String, Integer> contentTypeMap,
+									 int totalProcessPages, int numberOfSuccessFetch) {
 		File outputFile = new File(OUTPUT);
 		if (outputFile.exists()) {
 			outputFile.delete();
@@ -119,6 +126,9 @@ public class Controller {
 		BufferedWriter writer = null;
 		try {
 			writer = new BufferedWriter(new FileWriter(OUTPUT, true));
+			writer.append("totalProcessPages: " + totalProcessPages + "\n");
+			writer.append("numberOfSuccessFetch: " + numberOfSuccessFetch + "\n");
+			writer.append("\n");
 			writer.append("Name: Nattarat Champreeda\n");
 			writer.append("USC ID: 5487597112\n");
 			writer.append("News site crawled: nytimes.com\n");
@@ -130,6 +140,7 @@ public class Controller {
 			writer.append("# fetches attempted: " + fetchAttempted + "\n");
 			writer.append("# fetches succeeded: " + successFetchAttempted + "\n");
 			writer.append("# fetches failed or aborted: " + failFetchAttempted + "\n");
+			writer.append("# fetches disappear: " + (numberOfSuccessFetch - successFetchAttempted) + "\n");
 
 			writer.append("\n");
 			writer.append("Outgoing URLs:\n" );
