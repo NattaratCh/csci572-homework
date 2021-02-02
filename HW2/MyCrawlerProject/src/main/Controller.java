@@ -32,7 +32,7 @@ public class Controller {
 		 config.setCrawlStorageFolder(crawlStorageFolder);
 		 config.setMaxPagesToFetch(maxPagesToFetch);
 		 config.setMaxDepthOfCrawling(maxDepth);
-		 config.setPolitenessDelay(100);
+		 config.setPolitenessDelay(2500);
 		 config.setIncludeHttpsPages(true);
 		 config.setIncludeBinaryContentInCrawling(true);
 		 config.setRespectNoIndex(false);

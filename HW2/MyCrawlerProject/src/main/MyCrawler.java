@@ -51,7 +51,8 @@ public class MyCrawler extends WebCrawler {
 	@Override
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
-		boolean shouldVisit = !FILTERS_CONTENT_TYPE.contains(referringPage.getContentType()) &&
+		String contentType = referringPage.getContentType().split(";")[0];
+		boolean shouldVisit = !FILTERS_CONTENT_TYPE.contains(contentType) &&
 				!FILTERS.matcher(href).matches() &&
 				( href.startsWith(insideUrls[0])
 						|| href.startsWith(insideUrls[1])
