@@ -21,12 +21,9 @@ public class InvertedIndexJob {
         private Text word = new Text();
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            //System.out.println("WordCountMapper | key: " + key);
             String[] valueStr = value.toString().trim().split("\\s+", 2);
             String documentId = valueStr[0];
-            System.out.println("WordCountMapper documentId: " + documentId);
             String cleanValue = valueStr[1].replaceAll("[^a-zA-Z]", " ").toLowerCase();
-            //System.out.println("WordCountMapper cleanValue: " + cleanValue);
             StringTokenizer itr = new StringTokenizer(cleanValue);
             while (itr.hasMoreTokens()) {
                 String v = itr.nextToken().trim();
@@ -43,11 +40,9 @@ public class InvertedIndexJob {
         private Text result = new Text();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            //System.out.println("WordCountReducer | key: " + key);
             Map<String, Integer> map = new HashMap();
             for (Text val : values) {
                 String documentId = val.toString();
-                //System.out.println("WordCountReducer | docId: " + documentId);
                 int count = 1;
                 if (map.containsKey(documentId)) {
                     count = map.get(documentId) + 1;
