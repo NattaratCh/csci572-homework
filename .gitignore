@@ -1,4 +1,7 @@
 .idea/
+HW2/input/*
+HW2/data/*
+HW2/out/*
 HW3/output/*
 *.iml
 HW3/target/*
