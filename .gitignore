@@ -1,7 +1,7 @@
 .idea/
-HW2/input/*
-HW2/data/*
-HW2/out/*
+HW2/MyCrawlerProject/input/*
+HW2/MyCrawlerProject/data/*
+HW2/MyCrawlerProject/out/*
 HW3/output/*
 *.iml
 HW3/target/*
