@@ -2,7 +2,7 @@ const searchService = require('./search.service')
 
 const search = async (request, response) => {
     const query = request.query.query
-    const pageRankEnabledStr = request.query.pageRankEnabled
+    const rankType = request.query.rankType
 
     console.log(request)
 
@@ -13,7 +13,7 @@ const search = async (request, response) => {
         })
     } else {
         // TODO handle if url is null
-        const pageRankEnabled = pageRankEnabledStr === 'true'
+        const pageRankEnabled = rankType === 'PageRank'
         searchService.getSearchResults(query, pageRankEnabled)
         .then(res => {
             response.status(200).send({
