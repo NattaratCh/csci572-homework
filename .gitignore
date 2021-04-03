@@ -7,3 +7,9 @@ HW3/output/*
 *.iml
 HW3/target/*
 HW3/input/*
+HW4/pagerank/*.csv
+HW4/pagerank/target/*
+HW4/pagerank/externalfile/*
+HW4/PageRankCalculation/venv/*
+HW4/PageRankCalculation/*.txt
+HW4/searchengine/node_modules/*
