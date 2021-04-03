@@ -24,10 +24,16 @@ function solrRequest(queryString) {
     $.get(url, function(data, status) {
         let results = data.data.docs
         renderSearchResults(results)
+        renderTotalResuls(data.data.numFound, results.length)
     })
     .fail(function(jqXHR, textStatus, error) {
         alert(jqXHR.responseJSON.message)
     })
+}
+
+function renderTotalResuls(numFound, docsSize) {
+    let html = 'Record(s): ' + docsSize + ' of ' + numFound
+    $('#totalResults').html(html)
 }
 
 function renderSearchResults(results) {
@@ -44,7 +50,7 @@ function renderSearchResults(results) {
             html += '   <div class="card-body">'
             html += '       <div><label>Title: </label> <a href="' + data.og_url + '" target="_blank">' + data.title + '</a></div>'
             html += '       <div><label>URL: </label> <a href="' + data.og_url + '" target="_blank">' + data.og_url + '</a></div>'
-            html += '       <div><label>Description: </label> ' + (data.og_description === undefined || data.og_description === '' ? 'N/A' : data.og_description[0]) + '</div>'
+            html += '       <div><label>Description: </label> <span>' + (data.og_description === undefined || data.og_description === '' ? 'N/A' : data.og_description) + '</span></div>'
             html += '       <div><label>ID: </label> ' + data.id + '</div>'
             html += '   </div>'
             html += '</div>'
