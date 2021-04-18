@@ -1,26 +1,67 @@
-const baseUrl = 'http://localhost:3000/api/search'
+const baseUrl = 'http://localhost:3000/api/'
 
 $(document).ready(function(){
     $("form").submit(function(event) {
         event.preventDefault()
-        var values = {};
-        let queryString = ''
-        $.each($('#search-form').serializeArray(), function(i, field) {
-            values[field.name] = field.value;
-        });
+        clearSuggestion()
+        search()
+    })
 
-        $.each(values, function(key, value) {
-            if (value !== '') {
-                if (queryString !== '') queryString += '&'
-                queryString += key + '=' + value
-            }
-        })
-        solrRequest(queryString)
+    $('#query').on('input', function() {
+        let query = $("#query").val()
+        suggest(query)
     })
 })
 
+function suggest(query) {
+    let url = baseUrl + "/suggest?query=" + query
+    $.get(url, function(response, status) {
+        let results = response.data
+        renderSuggestion(results)
+    })
+    .fail(function(jqXHR, textStatus, error) {
+        alert(jqXHR.responseJSON.message)
+    })
+}
+
+function renderSuggestion(suggestions) {
+    let html = ''
+    $.each(suggestions, function(index, data) {
+        console.log(data)
+        html += '<div class="suggestion">' + data + '</div>'
+    })
+    $('.autocomplete-list').html(html)
+
+    $(document).on('click', '.suggestion', function(e) {
+        e.preventDefault();
+        clearSuggestion()
+        $("#query").val($(this).text())
+        search()
+    })
+}
+
+function clearSuggestion() {
+    $('.autocomplete-list').html('')
+}
+
+function search() {
+    var values = {};
+    let queryString = ''
+    $.each($('#search-form').serializeArray(), function(i, field) {
+        values[field.name] = field.value;
+    });
+
+    $.each(values, function(key, value) {
+        if (value !== '') {
+            if (queryString !== '') queryString += '&'
+            queryString += key + '=' + value
+        }
+        })
+    solrRequest(queryString)
+}
+
 function solrRequest(queryString) {
-    let url = baseUrl + '?' + queryString
+    let url = baseUrl + '/search?' + queryString
     $.get(url, function(data, status) {
         let results = data.data.docs
         renderSearchResults(results)

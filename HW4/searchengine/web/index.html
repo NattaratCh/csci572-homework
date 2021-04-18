@@ -14,7 +14,13 @@
                     <h3>Search</h3>
                     <form id="search-form" action="#">
                         <div class="form-group">
-                            <input type="text" class="form-control" id="query" name="query" placeholder="Enter keyword">
+                            <div class="autocomplete">
+                                <input type="text" class="form-control" id="query" name="query" placeholder="Enter keyword">
+                                <div class="autocomplete-list">
+                                    <!-- <div>Text1</div>
+                                    <div>Text2</div> -->
+                                </div>
+                            </div>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="rankType" id="rankType1" value="Lucence" checked>

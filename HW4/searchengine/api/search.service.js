@@ -10,6 +10,12 @@ const getSearchResults = (query, pageRankEnabled) => {
     return promise
 }
 
+const getSuggestion = (query) => {
+    const url = 'http://localhost:8983/solr/myexample/suggest?q=' + encodeURIComponent(query)
+    return axios.get(url).then(res => res.data)
+}
+
 module.exports = {
-    getSearchResults
+    getSearchResults,
+    getSuggestion
 }

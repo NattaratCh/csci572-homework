@@ -1,6 +1,7 @@
 const searchService = require('./search.service')
 const fs = require('fs')
 const csv = require('csv-parser')
+const { response } = require('../app')
 let urlMapping = {}
 
 const loadUrlMapping = () => {
@@ -54,7 +55,35 @@ const search = async (request, response) => {
     }
 }
 
+const suggest = async (request, response) => {
+    const query = request.query.query
+
+    if (query === undefined) {
+        response.status(400).send({
+            success: false,
+            message: "Invalid parameters"
+        })
+    } else {
+        searchService.getSuggestion(query)
+        .then(res => {
+            let suggestions = res.suggest.suggest[query].suggestions
+            response.status(200).send({
+                success: true,
+                data: suggestions.map(x => x.term)
+            })
+        })
+        .catch(err => {
+            console.log(err)
+            response.status(400).send({
+                success: false,
+                message: err
+            })
+        })
+    }
+}
+
 module.exports = {
     search,
-    loadUrlMapping
+    loadUrlMapping,
+    suggest
 }
