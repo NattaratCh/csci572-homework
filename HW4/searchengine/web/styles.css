@@ -24,3 +24,13 @@
     background-color: #fff;
     border-bottom: 1px solid #d4d4d4;
 }
+
+.correct-word {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+}
+
+#result {
+    margin-top: 10px;
+}

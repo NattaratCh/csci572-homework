@@ -3,7 +3,6 @@ const baseUrl = 'http://localhost:3000/api/'
 $(document).ready(function(){
     $("form").submit(function(event) {
         event.preventDefault()
-        clearSuggestion()
         search()
     })
 
@@ -34,7 +33,6 @@ function renderSuggestion(suggestions) {
 
     $(document).on('click', '.suggestion', function(e) {
         e.preventDefault();
-        clearSuggestion()
         $("#query").val($(this).text())
         search()
     })
@@ -45,6 +43,8 @@ function clearSuggestion() {
 }
 
 function search() {
+    clearCorrection()
+    clearSuggestion()
     var values = {};
     let queryString = ''
     $.each($('#search-form').serializeArray(), function(i, field) {
@@ -66,10 +66,29 @@ function solrRequest(queryString) {
         let results = data.data.docs
         renderSearchResults(results)
         renderTotalResuls(data.data.numFound, results.length)
+        if (data.correction !== null) {
+            renderCorrection(data.correction)
+        }
     })
     .fail(function(jqXHR, textStatus, error) {
         alert(jqXHR.responseJSON.message)
     })
+}
+
+function renderCorrection(correctWord) {
+    let html = 'Did you mean '
+    html += '<span class="correct-word">' + correctWord + '</span>?'
+    $("#correction").html(html)
+
+    $(document).on('click', '.correct-word', function(e) {
+        e.preventDefault();
+        $("#query").val($(this).text())
+        search()
+    })
+}
+
+function clearCorrection() {
+    $("#correction").html('')
 }
 
 function renderTotalResuls(numFound, docsSize) {

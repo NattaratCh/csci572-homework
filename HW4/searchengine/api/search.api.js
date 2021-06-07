@@ -1,7 +1,7 @@
 const searchService = require('./search.service')
+const correctionService = require('./correction.service')
 const fs = require('fs')
 const csv = require('csv-parser')
-const { response } = require('../app')
 let urlMapping = {}
 
 const loadUrlMapping = () => {
@@ -40,9 +40,15 @@ const search = async (request, response) => {
                 }
             })
 
+            let correction = null
+            if ( res.response.docs.length === 0) {
+                correction = correctionService.correction(query)
+            }
+
             response.status(200).send({
                 success: true,
-                data: res.response
+                data: res.response,
+                correction: correction === query ? null : correction
             })
         })
         .catch(err => {
@@ -64,12 +70,29 @@ const suggest = async (request, response) => {
             message: "Invalid parameters"
         })
     } else {
-        searchService.getSuggestion(query)
+        const spaceIdx = query.lastIndexOf(" ")
+        let firstQueryTerms = ''
+        let lastQueryTerm = ''
+        if (spaceIdx > -1) {
+            firstQueryTerms = query.substring(0, spaceIdx)
+            lastQueryTerm = query.substring(spaceIdx+1)
+        } else {
+            lastQueryTerm = query
+        }
+    
+
+        searchService.getSuggestion(lastQueryTerm.toLowerCase())
         .then(res => {
-            let suggestions = res.suggest.suggest[query].suggestions
+            let suggestions = res.suggest.suggest[lastQueryTerm].suggestions
             response.status(200).send({
                 success: true,
-                data: suggestions.map(x => x.term)
+                data: suggestions.map(x => {
+                    if (firstQueryTerms !== '') {
+                        return firstQueryTerms + ' ' + x.term
+                    } else {
+                        return x.term
+                    }
+                })
             })
         })
         .catch(err => {
